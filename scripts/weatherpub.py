@@ -33,8 +33,11 @@ GUST_MPH_MIN      = 7   # minimum mph of gust above avg wind speed to report
 #     value defines class object of publication service
 PUB_SERVICES = {
       'wug'    : weather.services.Wunderground,
+      'wugrt'  : weather.services.Wunderground,
       'pws'    : weather.services.PwsWeather,
       'file'   : weather.services.TextFile,
+      'custom' : weather.services.Custom,
+      'webcam' : weather.services.Webcam
    }
 
 
@@ -99,7 +102,7 @@ def weather_update(station, pub_sites, interval):
                rainin      = station.fields['RainRate'],
                rainday     = station.fields['RainDay'],
                dateutc     = station.fields['DateStampUtc'],
-               windspeed   = station.fields['WindSpeed10Min'],
+               windspeed   = station.fields['WindSpeed'],     #10Min'],
                winddir     = station.fields['WindDir'],
                windgust    = gust,
                windgustdir = gust_dir, )
@@ -156,10 +159,16 @@ def get_options(parser):
          of weather data.''', )
    pub_g.add_option('-w', '--wundergound', nargs=2, type='string', dest='wug',
          help='Weather Underground service; WUG=[SID(station ID), PASSWORD]')
+   pub_g.add_option('-r', '--wundergoundrt', nargs=3, type='string', dest='wugrt',
+         help='Weather Underground service; WUG=[SID(station ID), PASSWORD, RTFREQ]')
    pub_g.add_option('-p', '--pws', nargs=2, type='string', dest='pws',
          help='PWS service; PWS=[SID(station ID), PASSWORD]')
    pub_g.add_option('-f', '--file', nargs=1, type='string', dest='file',
          help='Local file; FILE=[FILE_NAME]')
+   pub_g.add_option('-c', '--custom', nargs=3, type='string', dest='custom',
+         help='Custom server; CUSTOM=[URL, SID, PASSWORD]')
+   pub_g.add_option('-a', '--webcam', nargs=3, type='string', dest='webcam',
+         help='Webcam server; CUSTOM=[URL, USER, PASSWORD]')
    parser.add_option_group(pub_g)
 
    parser.add_option('-d', '--debug', dest='debug', action="store_true",
@@ -197,4 +206,5 @@ if __name__ == '__main__':
          weather_update( station, pub_sites, opts.interval)
       except (Exception) as e:
          log.error(e)
+
 
